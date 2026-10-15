@@ -1,0 +1,10 @@
+{
+  "name": "limited-library-desktop",
+  "productName": "Limited Library",
+  "version": "0.1.0",
+  "private": true,
+  "description": "有限收藏，无限记忆。Windows 本地媒体收藏与已看清单。",
+  "author": "OldBeer1",
+  "type": "module",
+  "main": "main.js"
+}

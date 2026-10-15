@@ -1,8 +1,8 @@
 # Limited Library
 
-**有限收藏，无限记忆。** 一个在 Windows 本地运行的个人媒体管理 Web App：精选作品放进限量收藏柜，所有看过、读过的作品完整留在历史清单中。
+**有限收藏，无限记忆。** 一个在 Windows 本地运行的个人媒体管理软件：精选作品放进限量收藏柜，所有看过、读过的作品完整留在历史清单中。
 
-当前版本：MVP 0.1.0。React + TypeScript + Vite / Fastify / SQLite，npm workspaces。用户已确认 L0 设计，L1–L4 实现、验证结果见 [VALIDATION](docs/VALIDATION.md)。个人数据不上传 GitHub，核心使用不依赖互联网。
+当前版本：Windows 桌面版 / MVP 0.1.0。Electron 桌面窗口 + React + TypeScript + Vite / Fastify / SQLite，npm workspaces。用户已确认 L0 设计，L1–L4 实现、验证结果见 [VALIDATION](docs/VALIDATION.md)。个人数据不上传 GitHub，核心使用不依赖互联网。
 
 ## 已实现
 
@@ -34,7 +34,17 @@
 
 当前未收到个人片单，正式数据库不会预填演示作品。首版支持手动补录，没有硬盘扫描、第三方抓取、批量导入或每次重看明细。
 
-## Windows 首次运行（PowerShell）
+## Windows 桌面版（推荐）
+
+双击 `Limited-Library-Setup-0.1.0-x64.exe` 安装，然后从桌面或开始菜单打开 **Limited Library**。安装包自带运行环境，使用者不需要安装 Node/npm，也不用打开浏览器或终端。当前交付本机文件放在 `output/windows/`，大型二进制不提交到源码仓库。
+
+程序提供独立窗口、单实例启动、自动选择空闲本地端口，以及 **文件 → 备份资料库**、**打开数据文件夹**菜单。退出会关闭随程序启动的本地服务。仍使用 `%LOCALAPPDATA%\LimitedLibrary\` 中的资料；安装和卸载不清空该目录。
+
+也可把 `output/windows/win-unpacked/` 整个目录复制到其他位置，然后双击其中的 `Limited Library.exe`。必须保留旁边的 `resources/`、DLL 等文件。详情、打包命令和验证见 [Windows 桌面版说明](docs/WINDOWS.md)。
+
+安装包暂未配置代码签名，Windows 可能显示发布者未知或信誉提示。正式使用前请关闭旧版 `npm run start` / PowerShell 服务，避免两个程序争用同一资料库。
+
+## 从源码运行 Web 版本（PowerShell）
 
 前提：Node 24.x、npm 11.x。本机已通过 Node 24.16.0 / npm 11.13.0，依赖准确版本由 package-lock.json 固定；better-sqlite3 和 sharp 的 Windows 原生加载已实测。不需要 Python 来运行应用。
 
@@ -63,7 +73,7 @@ npm run start
 
 | 模式 | 数据目录 | 地址 |
 |---|---|---|
-| 生产 | `%LOCALAPPDATA%\LimitedLibrary\` | `http://127.0.0.1:3210` |
+| Web 生产 | `%LOCALAPPDATA%\LimitedLibrary\` | `http://127.0.0.1:3210` |
 | 开发 | 项目 `.local-data\development\` | `http://127.0.0.1:43128`，代理本地 API |
 | 自动测试 | 唯一系统临时目录，测试完成后关闭连接并清理 | smoke / UI 自动选择空闲端口 |
 
@@ -86,6 +96,7 @@ npm run typecheck
 npm run build
 npm run smoke         # 构建后的生产启动、重启持久化、开发 Vite 代理
 npm run test:ui       # 已安装 Edge 中运行关键界面验收；须先 build
+npm run test:desktop  # 验收 output/windows/win-unpacked 中的真实桌面程序
 ```
 
 UI 检查使用项目本地 Playwright CLI 与现有 Edge，不装全局浏览器；所有数据是唯一临时目录中的合成数据，截图在 output/playwright/，不提交私人运行资料。没有 Edge 的机器可先运行其余检查，不能把未运行 UI 称为通过。

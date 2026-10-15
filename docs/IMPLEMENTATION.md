@@ -17,3 +17,7 @@
 6. 本地自动 UI 验收通过项目 Playwright CLI 与现有 Edge 执行，结果和截图仅写 output/playwright/，不上传私人运行记录。
 
 验证仅使用唯一临时目录与合成数据；最终命令结果见 [VALIDATION.md](VALIDATION.md)。GitHub 发布报告在本机 Git 管理目录，由最终交付回复给出准确状态。
+
+## Windows 桌面交付
+
+用户追加要求制作 Windows 软件。已加入 Electron 桌面窗口、独立 Node 后端子进程、NSIS 安装配置和原生备份菜单，保留 schema 1 与默认数据目录。离线维护实现移至服务端共享模块，原脚本入口继续重导出。桌面验收和限制见 [WINDOWS.md](WINDOWS.md)。

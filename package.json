@@ -24,18 +24,25 @@
     "test:design": "python scripts/check_design.py",
     "unlock": "tsx scripts/unlock.ts",
     "smoke": "node scripts/smoke.mjs",
-    "test:ui": "node scripts/check-ui.mjs"
+    "test:ui": "node scripts/check-ui.mjs",
+    "desktop": "npm run build && node scripts/launch-desktop.mjs",
+    "desktop:prepare": "npm run build && node scripts/prepare-desktop.mjs",
+    "desktop:pack": "npm run desktop:prepare && electron-builder --config electron-builder.yml --win --x64 --dir",
+    "desktop:dist": "npm run desktop:prepare && electron-builder --config electron-builder.yml --win --x64",
+    "test:desktop": "node scripts/check-desktop.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "eslint": "10.12.0",
-    "typescript-eslint": "8.71.2",
-    "typescript": "6.0.3",
-    "tsx": "4.23.15",
+    "@playwright/cli": "0.1.22",
+    "@types/better-sqlite3": "9.6.0",
     "@types/node": "24.19.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@types/better-sqlite3": "9.6.0",
-    "@playwright/cli": "0.1.22"
+    "electron": "44.7.2",
+    "electron-builder": "26.15.3",
+    "eslint": "10.12.0",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.2"
   }
 }
