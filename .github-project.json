@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "repository": "OldBeer1/limited-library",
+  "remote": "origin",
+  "branch": "main",
+  "visibility": "Public",
+  "include": [
+    "*"
+  ],
+  "exclude": [
+    ".github-project.local/*",
+    "work/*",
+    "*/work/*"
+  ],
+  "maxFileMiB": 100,
+  "maxTextScanMiB": 1,
+  "backupBeforePublish": false,
+  "backupRoot": null
+}
