@@ -1,7 +1,7 @@
 # Limited Library｜L0 设计与实施计划
 
 日期：2026-10-15（Asia/Shanghai）
-状态：设计可审阅，等待架构确认；未实施 MVP。
+状态：L0 设计已于 2026-10-15 获用户确认并实施。本文保留设计基线；当前实现与端口等落地细节见 IMPLEMENTATION.md，实际验证见 VALIDATION.md。
 
 依据：项目内《01-Limited-Library-Codex任务书.md》全文。后续用户补充：“弄个已经看过的，我想要收藏，所有看过的都弄上”。本计划据此增加完整已看／已读历史清单及收藏能力。没有用户片单，不生成或冒认个人记录。
 
@@ -246,7 +246,7 @@ v_category_summary 从 categories LEFT JOIN 作品，每分类返回 retained / 
   "targetCategory": "movie",
   "candidate": {"id": "OLD_UUID", "expectedVersion": 3},
   "disposition": "archive",
-  "incoming": {"kind": "restore", "id": "HISTORY_UUID", "expectedVersion": 2, "status": "completed"}
+  "incoming": {"kind": "restore", "id": "HISTORY_UUID", "expectedVersion": 2, "changes": {"status": "completed"}}
 }
 ```
 
@@ -369,14 +369,14 @@ WAL 活跃时不只复制 library.sqlite；首版不声称在线热备份。如�
 
 已经落实的用户补充：六类完整已看／已读清单、所有记录可保存并收藏；没有实际片单数据可导入。
 
-请审阅并确认以下设计基线后开始 MVP：
+以下设计基线已由用户确认，后续按此实施：
 
 1. **技术与结构**：React + TypeScript + Vite / Fastify / SQLite，Windows 本地 npm workspaces，数据独立于源码。
 2. **容量与历史**：柜内 planned / watching / completed / dropped 都占位；归档不占位。所有已看记录均可进入无限额历史清单，补录默认历史；收藏标记独立于是否入柜。
 3. **评分与删除**：0–10、0.5 步长、可未评分；归档保留历史，永久删除连同对应已看记录一起移除。若希望永久保留任何历史，应在实现前改为禁止历史硬删除。
 4. **历史粒度**：首版记录“曾完成”及一个可空完成日期，不追踪每次重看；手动补录，批量导入不默认进入 MVP。
 
-这里是任务书明确要求的唯一阶段确认点。确认后从 L1 驱动兼容验证开始，连续推进 L2–L4；不会逐步重复请求许可。
+用户已通过该阶段确认点，L1–L4 实施情况以 IMPLEMENTATION.md 为准；无需重新确认这些规则。
 
 ## 13. 技术依据与核验范围
 

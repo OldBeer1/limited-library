@@ -21,3 +21,7 @@ __pycache__/
 !.env.sample
 !.env.template
 *.log
+
+output/
+.playwright-cli/
+*.tsbuildinfo

@@ -1,3 +1,56 @@
+# Limited Library｜MVP 实际验证
+
+日期：2026-10-15（Asia/Shanghai）。用户已确认 L0 并要求实现。本节记录当前 MVP；下方 L0 章节保留为当时的历史证据，其中“尚未执行”只描述设计阶段。
+
+## 当前实现与环境
+
+Node 24.16.0 / npm 11.13.0 / Windows；Python 3.13.15 只用于旧设计检查。运行依赖固定在 package-lock.json：React / React DOM 19.3.1、Vite 8.3.4、React plugin 6.1.2、TypeScript 6.0.3、Fastify 5.12.7、static 10.1.6、multipart 10.1.4、better-sqlite3 13.0.3（实际 SQLite 3.53.4）、sharp 0.35.5。选择 TypeScript 6 是因 typescript-eslint 8.71.2 声明 <6.1 支持，未使用不兼容的 TypeScript 7。
+
+npm ci --no-fund --audit=false 已按锁文件重装 204 个包成功，未全局安装软件或改变 PATH。原生驱动在本机完成建库、BEGIN IMMEDIATE 事务、读取；封面库完成实际 PNG / JPEG / WebP 解码。
+
+## 最终检查
+
+以下命令均已在当前最终版本执行通过；检查完成后只追加验证证据。
+
+| 命令 | 状态 |
+|---|---|
+| npm test | 通过，26 项集成测试，0 失败 |
+| npm run lint | 通过，0 错误 |
+| npm run typecheck | 通过，contracts / server / web / tests |
+| npm run build | 通过，网页与后端生产构建 |
+| npm run smoke | 通过，生产 HTML / 深链接 / 重启持久化及开发 Vite 代理 / Origin / token / 正常关闭 |
+| npm run test:ui | 10 组关键 UI 检查已通过，无浏览器未处理异常 |
+| python scripts/check_design.py | 通过，29 项，原任务书 SHA-256 未变 |
+
+## 已执行的关键证据
+
+- API / 原生 SQLite 集成覆盖六类容量、满位新增、completed / dropped 占位、零容量补录历史、六类完整历史与收藏、归档／重看／未知日期、version 冲突、恢复与跨类限制、缩容、请求幂等重放与参数冲突。
+- 故意永久删除候选后，让 incoming 引用不存在的封面触发 FK 失败：候选恢复、保留数不变、失败 requestId 不写成功记录。不是 mock 数据库测试。
+- 两个 worker 各自独立原生连接，经屏障同时抢第十个位置：结果一方 committed、一方 CATEGORY_FULL，最终电影 10/10。
+- 真实 PNG、JPEG、WebP 上传／读取成功；SVG、伪造 MIME、截断图片和超过 5 MiB 被拒绝。非法 Host / Origin / token（含非 ASCII）阻止写入。
+- 停服备份恢复包含合成备注、收藏、评分、完整字段及实际封面；逻辑 SHA-256 一致，原库字节未覆盖；已有目标、嵌套目标、篡改清单和运行中备份被拒绝。
+- 当前 Playwright CLI 自动检查的 10 组：历史补录＋收藏＋真实封面＋未知日期；断网草稿与恢复重试；取消替换；其他页面修改候选后的自动刷新；375px 全键盘归档替换；375/768/1440 布局；容量设置；搜索／编辑／收藏切换；永久删除确认／取消；无浏览器未处理异常。
+- 手动 CLI 也复核：取消替换时标题未丢，保留总数 7、已看总数 14 未变；键盘替换后电影保持 2/2，旧作品出现在归档。375px 页面 scrollWidth=375，两个嵌套 dialog 的 scrollWidth 与 clientWidth 均为 335；768px 页面 scrollWidth=768。
+- UI 自动结果 output/playwright/ui-result.json、cabinet-1440.png、history-375.png、history-768.png、history-1440.png、replace-375.png 均为合成资料库。输出目录忽略，不提交私人运行痕迹。
+
+## 排错与修复记录
+
+1. Windows 测试清理原先先删临时目录、后关连接，导致 EPERM；夹具改为先关闭应用和数据库再删除自己创建的临时目录，26 项全通过。
+2. 3218 与 5173 EACCES 经最小 socket 复现。Get-NetTCPConnection 显示 QMUpload.exe 的 Bound 套接字；未修改该进程。43128 已实测可绑定，用作显式开发默认；生产 3210 可绑定；smoke/UI 使用动态空闲端口。
+3. 静态目录 index:false 造成根路径 Forbidden；改为显式 index.html，原生产 HTTP smoke 通过，deep link 返回网页。诊断标记已移除。
+4. 开发 smoke 查明 Vite 启动器被错误地相对于 web cwd 解析；改为绝对可执行脚本路径，并实际验证代理写入和正常关闭。
+5. UI 自动测试原先对双弹窗用单 locator 等待隐藏，触发严格模式；改为等全部 open dialog 数量归零。真实键盘流程和数据检查通过。
+
+代码可读性：本次新建 TS / TSX / CSS / 配置使用一次性 Prettier 3.9.10 整理，不新增运行依赖，未格式化或修改原任务书。格式整理后再次执行相称检查。
+
+并发 UI 回归：实际修改已选候选的 version 后触发冲突，旧实现没有重新 GET 候选而在 3000ms 断言失败；补充 reload 触发读取新列表后，同一草稿可重新选择并成功替换。
+
+## 边界与未验证项
+
+未用私人库做测试；没有预填个人片单、旧库迁移或云同步。首次初始化 schema 1 已验证；未来升级迁移尚无版本，版本／checksum 不匹配会停止。首版不提供在线热备份、自动封面清理、批量片单导入、每次重看明细。仅验证当前 Windows / Node / Edge 组合，未作其他操作系统、所有浏览器或超大历史库压力测试。没有配置或宣称 GitHub CI 通过；本地成功与远端推送分别核验。
+
+---
+
 # Limited Library｜L0 验证记录
 
 日期：2026-10-15（Asia/Shanghai）
